@@ -28,7 +28,7 @@ ENV APP_PORT=3000
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=5s --retries=3 --start-period=60s \
-  CMD poetry run python3 -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')" || exit 1
+  CMD poetry run python3 -c "import urllib.request; urllib.request.urlopen('http://localhost:3000/health')" || exit 1
 
 # Run the application
 ENTRYPOINT ["bash"]
