@@ -60,7 +60,12 @@ jobs:
           terraform_wrapper: false
 
       - name: Terraform Init
-        run: terraform init
+        run: |
+          terraform init \
+            -backend-config="bucket=trungvu-devops-test-bucket" \
+            -backend-config="key=terraform/terraform.tfstate" \
+            -backend-config="region=${{ env.AWS_REGION }}" \
+            -backend-config="encrypt=true"
         working-directory: ./terraform
 
       - name: Terraform Plan
