@@ -126,16 +126,15 @@ jobs:
           ECR_REPOSITORY_URL: ${{ needs.terraform.outputs.ecr_repository_url }}
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          # Build a docker container and push it to ECR
           docker build -t $ECR_REPOSITORY_URL:$IMAGE_TAG .
           docker push $ECR_REPOSITORY_URL:$IMAGE_TAG
           echo "image=$ECR_REPOSITORY_URL:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
       - name: Download task definition
         env:
-          TASK_DEFINITION_ARN: ${{ needs.terraform.outputs.task_definition_arn }}
+          TASK_FAMILY: ${{ needs.terraform.outputs.task_definition_family }}
         run: |
-          aws ecs describe-task-definition --task-definition $TASK_DEFINITION_ARN --query taskDefinition > task-definition.json
+          aws ecs describe-task-definition --task-definition $TASK_FAMILY --query taskDefinition > task-definition.json
 
       - name: Fill in the new image ID in the Amazon ECS task definition
         id: task-def
