@@ -83,7 +83,7 @@ resource "aws_ecs_task_definition" "app" {
           awslogs-group         = aws_cloudwatch_log_group.main.name
           awslogs-region        = var.aws_region
           awslogs-stream-prefix = "ecs"
-          awslogs-create-group = true
+          awslogs-create-group  = "true"
         }
       },
       environment = [
