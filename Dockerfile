@@ -4,32 +4,17 @@ FROM python:3.12-slim
 # Set the working directory in the container
 WORKDIR /app
 
+# Copy the pyproject.toml file into the container
+COPY pyproject.toml poetry.lock poetry.toml ./
+
 # Install Poetry
-RUN curl -sSL https://install.python-poetry.org | python3 -
+RUN pip install --no-cache-dir poetry
 
-# Add Poetry to PATH
-ENV PATH="/root/.local/bin:$PATH"
+# Install the dependencies using Poetry
+RUN poetry install --no-root --no-interaction
 
-# Copy project files
-COPY pyproject.toml poetry.lock* ./
-
-# Install dependencies
-RUN poetry install --no-dev --no-root
-
-# Copy application code
+# Copy the rest of the application code into the container
 COPY . .
 
-# Make run.sh executable
-RUN chmod +x run.sh
-
-# Set environment variables
-ENV APP_ENV=production
-ENV APP_PORT=3000
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=5s --retries=3 --start-period=60s \
-  CMD poetry run python3 -c "import urllib.request; urllib.request.urlopen('http://localhost:3000/health')" || exit 1
-
-# Run the application
-ENTRYPOINT ["bash"]
-CMD ["run.sh"]
+# Expose the port the app runs on
+EXPOSE 3000

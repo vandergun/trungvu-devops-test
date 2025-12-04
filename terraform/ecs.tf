@@ -99,6 +99,7 @@ resource "aws_ecs_task_definition" "app" {
         retries     = 2
         startPeriod = 120
       }
+      command = ["poetry", "run", "python3", "main.py"]
     }
   ])
 }
