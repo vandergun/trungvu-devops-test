@@ -17,3 +17,7 @@ output "task_definition_family" {
   description = "Family name of the task definition"
   value       = aws_ecs_task_definition.app.family
 }
+
+output "task_definition_arn" {
+  value = aws_ecs_task_definition.app.arn
+}

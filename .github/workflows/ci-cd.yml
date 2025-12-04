@@ -41,6 +41,7 @@ jobs:
       ecs_cluster_name: ${{ steps.tf-output.outputs.ecs_cluster_name }}
       ecs_service_name: ${{ steps.tf-output.outputs.ecs_service_name }}
       task_definition_family: ${{ steps.tf-output.outputs.task_definition_family }}
+      task_definition_arn: ${{ steps.tf-output.outputs.task_definition_arn }}
 
     steps:
       - name: Checkout
@@ -89,6 +90,7 @@ jobs:
           echo "ecs_cluster_name=$(terraform output -raw ecs_cluster_name)" >> $GITHUB_OUTPUT
           echo "ecs_service_name=$(terraform output -raw ecs_service_name)" >> $GITHUB_OUTPUT
           echo "task_definition_family=$(terraform output -raw task_definition_family)" >> $GITHUB_OUTPUT
+          echo "task_definition_arn=$(terraform output -raw task_definition_arn)" >> $GITHUB_OUTPUT
         working-directory: ./terraform
 
   deploy:
@@ -131,9 +133,9 @@ jobs:
 
       - name: Download task definition
         env:
-          TASK_FAMILY: ${{ needs.terraform.outputs.task_definition_family }}
+          TASK_DEFINITION_ARN: ${{ needs.terraform.outputs.task_definition_arn }}
         run: |
-          aws ecs describe-task-definition --task-definition $TASK_FAMILY --query taskDefinition > task-definition.json
+          aws ecs describe-task-definition --task-definition $TASK_DEFINITION_ARN --query taskDefinition > task-definition.json
 
       - name: Fill in the new image ID in the Amazon ECS task definition
         id: task-def
