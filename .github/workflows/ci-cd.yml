@@ -6,7 +6,7 @@ on:
       - main
 
 env:
-  AWS_REGION: us-east-1
+  AWS_REGION: ap-southeast-1
 
 jobs:
   build-and-test:
@@ -134,7 +134,19 @@ jobs:
         env:
           TASK_FAMILY: ${{ needs.terraform.outputs.task_definition_family }}
         run: |
-          aws ecs describe-task-definition --task-definition $TASK_FAMILY --query taskDefinition > task-definition.json
+          for i in {1..5}; do
+            if aws ecs describe-task-definition --task-definition $TASK_FAMILY --query taskDefinition > task-definition.json; then
+              echo "Task definition retrieved successfully"
+              break
+            fi
+            if [ $i -lt 5 ]; then
+              echo "Attempt $i failed, retrying in 10 seconds..."
+              sleep 10
+            else
+              echo "Failed to retrieve task definition after 5 attempts"
+              exit 1
+            fi
+          done
 
       - name: Fill in the new image ID in the Amazon ECS task definition
         id: task-def
